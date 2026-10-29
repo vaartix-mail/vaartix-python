@@ -8,7 +8,7 @@ Official Python SDK for [Vaartix](https://vaartix.com), the email API for Indian
 pip install vaartix
 ```
 
-Python 3.9 or newer. No dependencies.
+Python 3.10 or newer. No dependencies.
 
 ## Send an email
 
