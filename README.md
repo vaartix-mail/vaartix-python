@@ -58,6 +58,42 @@ vaartix.emails.send(
 )
 ```
 
+## Django
+
+Send all of Django's email through Vaartix, including `send_mail`, `EmailMessage` and built-in
+emails such as password resets:
+
+```sh
+pip install "vaartix[django]"
+```
+
+```python
+# settings.py
+VAARTIX_API_KEY = os.environ["VAARTIX_API_KEY"]
+DEFAULT_FROM_EMAIL = "Acme <noreply@acme.in>"  # on a domain verified in Vaartix
+
+# Django 6.1 and newer
+MAILERS = {"default": {"BACKEND": "vaartix.django.EmailBackend"}}
+# Django 4.2 to 6.0
+EMAIL_BACKEND = "vaartix.django.EmailBackend"
+```
+
+With `MAILERS` you can also pass the key as an option instead:
+`{"BACKEND": "vaartix.django.EmailBackend", "OPTIONS": {"api_key": "vx_live_..."}}`.
+
+```python
+from django.core.mail import EmailMultiAlternatives
+
+message = EmailMultiAlternatives("Order confirmed", "Thanks!", to=["priya@example.com"])
+message.attach_alternative("<p>Thanks!</p>", "text/html")
+message.tags = [{"name": "type", "value": "order"}]  # optional
+message.send()
+print(message.vaartix_id)  # em_...
+```
+
+HTML alternatives, attachments, inline images (`Content-ID`), cc, bcc, reply-to and custom
+headers are all supported. Errors raise `VaartixError` unless you pass `fail_silently=True`.
+
 ## Errors
 
 API and network errors raise `VaartixError`:
