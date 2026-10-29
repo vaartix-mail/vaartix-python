@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import socket
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -118,7 +117,7 @@ class Vaartix:
 
         try:
             status, raw = self._transport(method, url, headers, data, self._timeout)
-        except (urllib.error.URLError, socket.timeout, OSError) as err:
+        except (TimeoutError, urllib.error.URLError, OSError) as err:
             reason = getattr(err, "reason", err)
             raise VaartixError("network_error", str(reason)) from err
 
