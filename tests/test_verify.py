@@ -122,3 +122,20 @@ def test_email_clicked_payload_matches_the_typed_shape():
     assert set(details) == set(ClickedEventDetails.__annotations__)
     assert details["link"] == "https://acme.in/orders/123"
     assert details["machine"] is False
+
+
+def test_delay_and_bounce_detail_types():
+    from vaartix import BounceEventDetails, DelayedEventDetails
+
+    delayed: DelayedEventDetails = {
+        "delayType": "TransientCommunicationFailure",
+        "diagnosticCode": "421 4.7.0 [TSS04] Messages temporarily deferred",
+        "statusCode": "4.7.0",
+    }
+    bounced: BounceEventDetails = {
+        "bounceType": "Permanent",
+        "diagnostics": [],
+        "diagnosticCode": "550 5.1.1 user unknown",
+    }
+    assert "bounceType" not in delayed
+    assert bounced["bounceType"] == "Permanent"

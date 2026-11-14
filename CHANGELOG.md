@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- `DelayedEventDetails` and `BounceEventDetails` TypedDicts for the `details` of
+  `email.delivery_delayed` and `email.bounced`, including `diagnosticCode`: the receiving
+  server's exact reply, such as Yahoo's `421 4.7.0 [TSS04]` line.
+
 ## 0.3.0
 
 - Open and click tracking: `"tracking": {"opens": ..., "clicks": ...}` on `emails.send()` and on

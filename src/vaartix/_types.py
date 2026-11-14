@@ -117,6 +117,39 @@ class ClickedEventDetails(TypedDict):
     asn: Optional[int]
 
 
+class DelayedEventDetails(TypedDict, total=False):
+    """``details`` of an ``email.delivery_delayed`` event while the receiving server defers.
+
+    A soft bounce can also arrive as ``email.delivery_delayed``; it has ``bounceType`` and matches
+    ``BounceEventDetails`` instead.
+    """
+
+    delayType: str
+    """SES's delay category, for example ``TransientCommunicationFailure`` or ``MailboxFull``."""
+    expirationTime: str
+    """When Amazon SES stops retrying (ISO 8601)."""
+    diagnosticCode: str
+    """The receiving server's exact reply, for example Yahoo's ``421 4.7.0 [TSS04] ...`` line."""
+    statusCode: str
+    """The enhanced status code, for example ``4.7.0``."""
+
+
+class _BounceRequired(TypedDict):
+    bounceType: Literal["Permanent", "Transient", "Undetermined"]
+    diagnostics: List[str]
+    """Deprecated: use ``diagnosticCode``."""
+
+
+class BounceEventDetails(_BounceRequired, total=False):
+    """``details`` of an ``email.bounced`` event (or a soft bounce sent as delivery_delayed)."""
+
+    bounceSubType: str
+    diagnosticCode: str
+    """The receiving server's exact reply."""
+    statusCode: str
+    """The enhanced status code, for example ``5.1.1``."""
+
+
 # "from" is a Python keyword, so this TypedDict uses the functional form.
 WebhookEventData = TypedDict(
     "WebhookEventData",
@@ -131,7 +164,7 @@ WebhookEventData = TypedDict(
         "subject": str,
         "tags": List[Tag],
         "emailCreatedAt": str,
-        # OpenedEventDetails or ClickedEventDetails for those events; other events vary.
+        # Opened/Clicked/DelayedEventDetails or BounceEventDetails for those events.
         "details": Dict[str, Any],
     },
 )
