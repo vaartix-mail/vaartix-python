@@ -105,13 +105,15 @@ tracked. Keep click tracking off for password-reset, magic-link and OTP emails.
 vaartix.domains.update(domain_id, open_tracking=True, click_tracking=True)
 
 # Override for one email
-vaartix.emails.send({
-    "from": "Acme <orders@acme.in>",
-    "to": "priya@example.com",
-    "subject": "Your order has shipped",
-    "html": '<p>Track it <a href="https://acme.in/orders/123">here</a></p>',
-    "tracking": {"opens": True, "clicks": True},
-})
+vaartix.emails.send(
+    {
+        "from": "Acme <orders@acme.in>",
+        "to": "priya@example.com",
+        "subject": "Your order has shipped",
+        "html": '<p>Track it <a href="https://acme.in/orders/123">here</a></p>',
+        "tracking": {"opens": True, "clicks": True},
+    }
+)
 ```
 
 With Django, set `message.tracking = {"opens": True}` before `message.send()`.
