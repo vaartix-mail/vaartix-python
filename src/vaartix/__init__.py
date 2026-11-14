@@ -3,7 +3,9 @@
 from ._client import Vaartix
 from ._errors import VaartixError, WebhookVerificationError
 from ._types import (
+    BounceEventDetails,
     ClickedEventDetails,
+    DelayedEventDetails,
     OpenedEventDetails,
     WebhookEventData,
     WebhookEventType,
@@ -13,7 +15,9 @@ from ._verify import verify_webhook
 from ._version import __version__
 
 __all__ = [
+    "BounceEventDetails",
     "ClickedEventDetails",
+    "DelayedEventDetails",
     "OpenedEventDetails",
     "Vaartix",
     "VaartixError",
