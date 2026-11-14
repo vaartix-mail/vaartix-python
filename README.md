@@ -94,6 +94,28 @@ print(message.vaartix_id)  # em_...
 HTML alternatives, attachments, inline images (`Content-ID`), cc, bcc, reply-to and custom
 headers are all supported. Errors raise `VaartixError` unless you pass `fail_silently=True`.
 
+## Open and click tracking
+
+Tracking is off unless you turn it on, for a whole domain or for one email. Only HTML emails are
+tracked. Keep click tracking off for password-reset, magic-link and OTP emails.
+
+```python
+# Default for every email from a domain (needs a full-access key from an owner or admin).
+# domain_id is the domain's ID from the dashboard or the API.
+vaartix.domains.update(domain_id, open_tracking=True, click_tracking=True)
+
+# Override for one email
+vaartix.emails.send({
+    "from": "Acme <orders@acme.in>",
+    "to": "priya@example.com",
+    "subject": "Your order has shipped",
+    "html": '<p>Track it <a href="https://acme.in/orders/123">here</a></p>',
+    "tracking": {"opens": True, "clicks": True},
+})
+```
+
+With Django, set `message.tracking = {"opens": True}` before `message.send()`.
+
 ## Errors
 
 API and network errors raise `VaartixError`:

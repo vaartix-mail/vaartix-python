@@ -55,6 +55,7 @@ def test_html_alternative_cc_bcc_reply_to_headers_and_tags(transport):
     )
     message.attach_alternative("<p>Thanks for your order</p>", "text/html")
     message.tags = [{"name": "type", "value": "order"}]
+    message.tracking = {"opens": True}
     assert message.send() == 1
     sent = transport.calls[0]["json"]
     assert sent["text"] == "Thanks for your order"
@@ -64,6 +65,7 @@ def test_html_alternative_cc_bcc_reply_to_headers_and_tags(transport):
     assert sent["replyTo"] == ["support@acme.in"]
     assert sent["headers"] == {"X-Order": "1042"}
     assert sent["tags"] == [{"name": "type", "value": "order"}]
+    assert sent["tracking"] == {"opens": True}
     assert message.vaartix_id == "em_django"
 
 

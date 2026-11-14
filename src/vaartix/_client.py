@@ -29,6 +29,8 @@ _KEY_NAMES = {
     "scheduled_at": "scheduledAt",
     "content_type": "contentType",
     "content_id": "contentId",
+    "open_tracking": "openTracking",
+    "click_tracking": "clickTracking",
 }
 
 
@@ -88,6 +90,7 @@ class Vaartix:
         self.emails = Emails(self)
         self.batch = Batch(self)
         self.webhooks = Webhooks(self)
+        self.domains = Domains(self)
 
     def _request(
         self,
@@ -206,6 +209,31 @@ class Batch:
         """Send up to 100 emails in one request (no attachments or scheduling). All or nothing."""
         result: Dict[str, List[SendEmailResponse]] = self._client._request(
             "POST", "/emails/batch", [_api_keys(e) for e in emails]
+        )
+        return result
+
+
+class Domains:
+    """Sending domains. Changing them needs a full-access key from an owner or admin."""
+
+    def __init__(self, client: Vaartix) -> None:
+        self._client = client
+
+    def update(
+        self,
+        domain_id: str,
+        *,
+        open_tracking: Optional[bool] = None,
+        click_tracking: Optional[bool] = None,
+    ) -> Dict[str, Any]:
+        """Change a domain's default open and click tracking. Omitted arguments keep their value."""
+        body: Dict[str, Any] = {}
+        if open_tracking is not None:
+            body["openTracking"] = open_tracking
+        if click_tracking is not None:
+            body["clickTracking"] = click_tracking
+        result: Dict[str, Any] = self._client._request(
+            "PATCH", f"/domains/{urllib.parse.quote(domain_id, safe='')}", body
         )
         return result
 

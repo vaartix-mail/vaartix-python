@@ -162,3 +162,42 @@ def test_many_trailing_slashes_in_base_url():
     t = FakeTransport()
     client(t, base_url="https://api.example.test" + "/" * 50_000).emails.get("em_1")
     assert t.calls[0]["url"] == "https://api.example.test/emails/em_1"
+
+
+def test_tracking_is_sent_as_given_and_left_out_when_absent():
+    t = FakeTransport()
+    c = client(t)
+    c.emails.send(
+        {
+            "from": "a@acme.in",
+            "to": "b@example.com",
+            "subject": "Hi",
+            "html": "<p>Hi</p>",
+            "tracking": {"opens": True, "clicks": False},
+        }
+    )
+    c.emails.send({"from": "a@acme.in", "to": "b@example.com", "subject": "Hi", "html": "x"})
+    c.batch.send(
+        [
+            {
+                "from": "a@acme.in",
+                "to": "b@example.com",
+                "subject": "A",
+                "html": "a",
+                "tracking": {"clicks": True},
+            }
+        ]
+    )
+    assert t.calls[0]["json"]["tracking"] == {"opens": True, "clicks": False}
+    assert "tracking" not in t.calls[1]["json"]
+    assert t.calls[2]["json"][0]["tracking"] == {"clicks": True}
+
+
+def test_domains_update_sends_only_given_fields():
+    t = FakeTransport(body={"id": "dom/1", "openTracking": True, "clickTracking": False})
+    result = client(t).domains.update("dom/1", open_tracking=True)
+    assert result["openTracking"] is True
+    call = t.calls[0]
+    assert call["method"] == "PATCH"
+    assert call["url"] == "https://api.vaartix.com/domains/dom%2F1"
+    assert call["json"] == {"openTracking": True}
