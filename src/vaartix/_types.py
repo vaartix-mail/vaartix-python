@@ -54,6 +54,8 @@ WebhookEventType = Literal[
     "email.rejected",
     "email.rendering_failure",
     "email.suppressed",
+    "email.opened",
+    "email.clicked",
 ]
 
 
@@ -83,3 +85,62 @@ class Webhook(TypedDict):
 class WebhookWithSecret(Webhook):
     secret: str
     """The signing secret (``whsec_...``). Only returned when created or rotated."""
+
+
+class OpenedEventDetails(TypedDict):
+    """``details`` of an ``email.opened`` event."""
+
+    machine: bool
+    """True when the open was most likely not a person (an image proxy or Apple Mail Privacy
+    Protection)."""
+    machineReason: Optional[Literal["image_proxy", "apple_mpp", "too_fast"]]
+    userAgentFamily: str
+    """For example ``Chrome``, ``Apple Mail`` or ``Gmail image proxy``. More may be added."""
+    country: Optional[str]
+    """Two-letter country code, when known."""
+    asn: Optional[int]
+    """Network (autonomous system) number, when known."""
+
+
+class ClickedEventDetails(TypedDict):
+    """``details`` of an ``email.clicked`` event."""
+
+    machine: bool
+    """True when the click was most likely not a person, such as a link scanner."""
+    machineReason: Optional[Literal["scanner", "scanner_network", "too_fast", "burst"]]
+    linkIndex: int
+    """Position of the link in the email's HTML, starting at 0."""
+    link: str
+    """The original link URL."""
+    userAgentFamily: str
+    country: Optional[str]
+    asn: Optional[int]
+
+
+# "from" is a Python keyword, so this TypedDict uses the functional form.
+WebhookEventData = TypedDict(
+    "WebhookEventData",
+    {
+        "emailId": str,
+        "eventId": str,
+        "recipient": Optional[str],  # None when the email had more than one recipient
+        "from": str,
+        "to": List[str],
+        "cc": List[str],
+        "bcc": List[str],
+        "subject": str,
+        "tags": List[Tag],
+        "emailCreatedAt": str,
+        # OpenedEventDetails or ClickedEventDetails for those events; other events vary.
+        "details": Dict[str, Any],
+    },
+)
+
+
+class WebhookPayload(TypedDict):
+    """The JSON body Vaartix posts to your endpoint, as returned by ``verify_webhook``."""
+
+    type: WebhookEventType
+    createdAt: str
+    """When the event happened. Deliveries can arrive out of order; sort by this."""
+    data: WebhookEventData

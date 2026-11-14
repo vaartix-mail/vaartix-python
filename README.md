@@ -159,8 +159,16 @@ def vaartix_webhook():
         return "", 400
     if event["type"] == "email.bounced":
         ...  # stop emailing event["data"]["recipient"]
+    if event["type"] == "email.clicked" and not event["data"]["details"]["machine"]:
+        ...  # a person clicked event["data"]["details"]["link"]
     return "", 200
 ```
+
+Endpoints receive `email.opened` and `email.clicked` only if they subscribe to them. Their
+`details` include `machine`, which is `True` when the open or click was most likely not a person
+(an image proxy, Apple Mail Privacy Protection or a link scanner), with the reason in
+`machineReason`. For type checkers, `WebhookPayload`, `OpenedEventDetails` and
+`ClickedEventDetails` describe these shapes; use `typing.cast` on the result of `verify_webhook`.
 
 In Django use `request.body` and `request.headers`. Signatures follow the
 [Standard Webhooks](https://www.standardwebhooks.com) spec.

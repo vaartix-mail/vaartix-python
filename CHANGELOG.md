@@ -9,7 +9,9 @@
 - Django: `message.tracking = {"opens": True}` sets tracking for one email.
 - `domains.update(domain_id, open_tracking=..., click_tracking=...)` changes a domain's tracking
   defaults.
-- Typed `email.opened` / `email.clicked` webhook events will follow once those events are live.
+- `email.opened` and `email.clicked` webhook events, with `TypedDict`s for type checkers:
+  `WebhookPayload`, `WebhookEventData`, `OpenedEventDetails` and `ClickedEventDetails`, exported
+  from `vaartix`. `verify_webhook` still returns a plain `dict`.
 
 ## 0.2.0
 

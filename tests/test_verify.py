@@ -77,3 +77,48 @@ def test_round_trip_with_a_vaartix_style_payload():
     client = Vaartix("vx_test", transport=lambda *a: (200, b"{}"))
     with pytest.raises(WebhookVerificationError):
         client.webhooks.verify(body, headers, secret)  # real clock: timestamp is far off
+
+
+def test_email_clicked_payload_matches_the_typed_shape():
+    from typing import cast
+
+    from vaartix import ClickedEventDetails, WebhookPayload
+
+    body = json.dumps(
+        {
+            "type": "email.clicked",
+            "createdAt": "2026-10-28T10:05:41.000Z",
+            "data": {
+                "emailId": "em_7hq2kv9xr4m1c8d3",
+                "eventId": "evt_5k2m8q1v7c3x9d4p",
+                "recipient": "rahul@example.in",
+                "from": "Acme <orders@acme.in>",
+                "to": ["rahul@example.in"],
+                "cc": [],
+                "bcc": [],
+                "subject": "Your order has shipped",
+                "tags": [{"name": "flow", "value": "shipping"}],
+                "emailCreatedAt": "2026-10-28T10:00:00.000Z",
+                "details": {
+                    "machine": False,
+                    "machineReason": None,
+                    "linkIndex": 0,
+                    "link": "https://acme.in/orders/123",
+                    "userAgentFamily": "Chrome",
+                    "country": "IN",
+                    "asn": 24560,
+                },
+            },
+        }
+    )
+    headers = {
+        "webhook-id": "msg_1",
+        "webhook-timestamp": str(SPEC_NOW),
+        "webhook-signature": sign(SPEC_SECRET, "msg_1", SPEC_NOW, body),
+    }
+    event = cast(WebhookPayload, verify_webhook(body, headers, SPEC_SECRET, now=SPEC_NOW))
+    assert event["type"] == "email.clicked"
+    details = cast(ClickedEventDetails, event["data"]["details"])
+    assert set(details) == set(ClickedEventDetails.__annotations__)
+    assert details["link"] == "https://acme.in/orders/123"
+    assert details["machine"] is False
