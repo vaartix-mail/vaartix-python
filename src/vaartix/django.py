@@ -41,7 +41,8 @@ class EmailBackend(BaseEmailBackend):
     """Sends each Django email with the Vaartix API.
 
     After sending, each message has a ``vaartix_id`` attribute with its Vaartix email ID.
-    Set ``message.tags = [{"name": "type", "value": "password_reset"}]`` to tag an email.
+    Set ``message.tags = [{"name": "type", "value": "password_reset"}]`` to tag an email, and
+    ``message.tracking = {"opens": True, "clicks": False}`` to override the domain's tracking.
     """
 
     def __init__(
@@ -114,6 +115,9 @@ def _to_params(message: EmailMessage) -> Dict[str, Any]:
     tags = getattr(message, "tags", None)
     if tags:
         params["tags"] = list(tags)
+    tracking = getattr(message, "tracking", None)
+    if tracking:
+        params["tracking"] = dict(tracking)
     return params
 
 

@@ -27,6 +27,8 @@ class Attachment(_AttachmentRequired, total=False):
 # "from" is a Python keyword, so emails are passed as plain dicts:
 #   {"from": "...", "to": "...", "subject": "...", "html": "..."}
 # Keys can be snake_case (reply_to, scheduled_at) or the API's camelCase (replyTo, scheduledAt).
+# Open/click tracking for one email: {"tracking": {"opens": True, "clicks": False}}. Each field
+# overrides the sending domain's default; leave a field (or "tracking") out to use the domain's.
 SendEmailParams = Dict[str, Any]
 
 EmailStatus = Literal[
