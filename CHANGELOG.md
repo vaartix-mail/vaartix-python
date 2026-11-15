@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.1
+
 - `DelayedEventDetails` and `BounceEventDetails` TypedDicts for the `details` of
   `email.delivery_delayed` and `email.bounced`, including `diagnosticCode`: the receiving
   server's exact reply, such as Yahoo's `421 4.7.0 [TSS04]` line.
