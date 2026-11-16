@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
-authors = [{ name = "NAP Designs", email = "support@vaartix.com" }]
+authors = [{ name = "SNAP Technologies", email = "support@vaartix.com" }]
 keywords = ["email", "transactional-email", "api", "india", "vaartix", "ses", "sdk", "django"]
 classifiers = [
   "Development Status :: 4 - Beta",
