@@ -2,7 +2,7 @@
 
 Official Python SDK for [Vaartix](https://vaartix.com), the email API for Indian developers.
 
-> Vaartix is in private beta. [Request early access](https://vaartix.com/#early-access).
+> Create a free account at [app.vaartix.com](https://app.vaartix.com): 5,000 emails a month on the free plan.
 
 ```sh
 pip install vaartix
